@@ -5,9 +5,10 @@
 #include<conio.h>
 using namespace std;
 int MaxScore = 0;
-void init(int map[][MAP_COL], int score) {
+int score = 0;					//总成绩
+void init(int map[][MAP_COL], int* score) {
 	int x, y;	//随机位置参数
-	score = 0;	//对成绩进行初始化
+	*score = 0;	//对成绩进行初始化
 	memset(map, 0, sizeof(int)*MAP_ROW*MAP_COL);	//初始化地图
 	//对地图进行初始化
 	for (int i = 0; i < 2;)
@@ -60,7 +61,7 @@ void DrawMap(int map[][MAP_COL], int score)
 	outtextxy(MAP_ROW * PIXEL + 10, 160, L"控制游戏");		//指定位置输出字符串
 	EndBatchDraw();		//结束绘制地图
 }
-void Play(int map[][MAP_COL], int score)
+void Play(int map[][MAP_COL], int* score)
 {
 	int len;
 	switch (getch())
@@ -89,7 +90,7 @@ void Play(int map[][MAP_COL], int score)
 						map[k][j] = map[k + 1][j];
 						map[k + 1][j] = 0;
 					}
-					score += map[i][j];
+					*score += map[i][j];
 				}
 			}
 		}
@@ -117,7 +118,7 @@ void Play(int map[][MAP_COL], int score)
 						map[k][j] = map[k - 1][j];
 						map[k - 1][j] = 0;
 					}
-					score += map[i][j];
+					*score += map[i][j];
 				}
 			}
 		}
@@ -145,7 +146,7 @@ void Play(int map[][MAP_COL], int score)
 							map[i][k] = map[i][k + 1];
 							map[i][k + 1] = 0;
 						}
-						score += map[i][j];
+						*score += map[i][j];
 					}
 				}
 			}
@@ -172,7 +173,7 @@ void Play(int map[][MAP_COL], int score)
 							map[i][k] = map[i][k - 1];
 							map[i][k - 1] = 0;
 						}
-						score += map[i][j];
+						*score += map[i][j];
 					}
 				}
 			}
@@ -234,20 +235,19 @@ void ReadData(int map[][MAP_COL], int score)
 
 int main() {
 	int map[MAP_ROW][MAP_COL];	//地图大小
-	int score=0;					//总成绩
 	initgraph(MAP_ROW * PIXEL + 200, MAP_COL * PIXEL + 100);	//加载窗口
-	init(map, score);			//初始化地图数据
+	init(map, &score);			//初始化地图数据
 	while (1)
 	{
 		DrawMap(map, score);	//绘制地图
-		Play(map, score);
+		Play(map, &score);
 		int res=Judge(map);
 		switch (res) {
 		case -1:
 			MessageBox(GetHWnd(), L"你输了", L"很遗憾", MB_OK);
 			if (score > MaxScore)
 				MaxScore = score;
-			init(map, score);		//输了，先初始化数据
+			init(map, &score);		//输了，先初始化数据
 			if (MessageBox(GetHWnd(), L"是否重新开始", L"提示", MB_YESNO | MB_DEFBUTTON1) == IDNO)
 			{
 				WriteData(map, score);	//保存游戏
